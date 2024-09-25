@@ -1,0 +1,12 @@
+extends layout/main
+block content 
+    main.container  
+        block content
+        h1 Mas imagenes
+          .grid 
+          
+           if finalObject && finalObject.length> 0 
+            each object in finalObject
+                .card            
+                    img(src=object.img)
+                    

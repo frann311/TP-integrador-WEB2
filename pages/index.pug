@@ -1,0 +1,43 @@
+extends layout/main
+
+
+block content 
+    main.container    
+        form(action="/filtrar" method="GET")
+            div
+                label(for="department") Departamento:
+                select(name="department")
+                    option(value="") -- Seleccionar Departamento --
+                    if departments && departments.length > 0
+                        each department in departments
+                            option(value=department.departmentId)=  department.displayName
+            div
+                label(for="keyword") Palabra Clave:
+                input(type="text" name="keyword")
+
+            div
+                label(for="location") Localización:
+                input(type="text" name="location")
+
+            button(type="submit") Filtrar
+        block content
+        h1 Resultados de la búsqueda
+         .grid 
+          
+           if finalObject && finalObject.length> 0 
+            each object in finalObject
+                .card
+                    if object.img              
+                        img(src=object.img, alt=object.title)
+                    else
+                        img(src="/img/errorImg.webp", alt=object.title)
+                    h2.card-title= object.title
+                    p.card-text Cultura: #{object.culture}
+                    p.card-text Dinastía: #{object.dynasty}
+                    if object.img              
+                        a(href=`/moreImg/${task.id}`) #Mas imagenes
+                    
+        nav
+            if page > 1
+                a(href=`/?page=${page - 1}&limit=${limit}`) Anterior
+            a(href=`/?page=${page + 1}&limit=${limit}`) Siguiente
