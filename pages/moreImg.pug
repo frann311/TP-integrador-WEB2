@@ -6,7 +6,8 @@ block content
           .grid 
           
            if finalObject && finalObject.length> 0 
-            each object in finalObject
-                .card            
-                    img(src=object.img)
+            each obj in finalObject
+                each imgs in obj.moreImg
+                    .card 
+                        img(src=imgs)
                     

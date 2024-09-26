@@ -3,14 +3,15 @@ extends layout/main
 
 block content 
     main.container    
+        h1 Galeria de arte  
         form(action="/filtrar" method="GET")
             div
                 label(for="department") Departamento:
                 select(name="department")
-                    option(value="") -- Seleccionar Departamento --
+                    option(value="") Todos los departamentos
                     if departments && departments.length > 0
                         each department in departments
-                            option(value=department.departmentId)=  department.displayName
+                            option(value=department.departmentId)= department.displayName
             div
                 label(for="keyword") Palabra Clave:
                 input(type="text" name="keyword")
@@ -21,22 +22,25 @@ block content
 
             button(type="submit") Filtrar
         block content
-        h1 Resultados de la búsqueda
+        
          .grid 
           
            if finalObject && finalObject.length> 0 
             each object in finalObject
                 .card
                     if object.img              
-                        img(src=object.img, alt=object.title)
+                        img.image(src=object.img, alt=object.title)
                     else
-                        img(src="/img/errorImg.webp", alt=object.title)
+                        img.image(src="/img/errorImg.webp", alt=object.title)
+                    p.card-text.none.date #{object.fecha} 
                     h2.card-title= object.title
                     p.card-text Cultura: #{object.culture}
                     p.card-text Dinastía: #{object.dynasty}
-                    if object.img              
-                        a(href=`/moreImg/${task.id}`) #Mas imagenes
-                    
+                    p.card-text Dinastía: #{object.id}
+                    if object.moreImg && object.moreImg.length> 0
+                        a(href=`/moreImg/${object.id}`) Más imágenes
+           else
+            h2  No hay resultados       
         nav
             if page > 1
                 a(href=`/?page=${page - 1}&limit=${limit}`) Anterior

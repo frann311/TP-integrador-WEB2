@@ -39,9 +39,11 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-const getDepartments = () => {
+const getDepartments = async () => {
   const url_departments =
     "https://collectionapi.metmuseum.org/public/collection/v1/departments";
+  const searchResponse = await axios(url_departments);
+  return searchResponse.data.departments;
 };
 const getObjects = async () => {
   const searchUrl = `https://collectionapi.metmuseum.org/public/collection/v1/search?q=&hasImages=true`;
@@ -102,7 +104,8 @@ const translateObjects = async (data) => {
           title: "Sin datos de Titulo",
           culture: "Sin datos de Cultura",
           dynasty: "Sin datos de dinastia",
-          moreImg: prod.additionalImages,
+          moreImg: null,
+          fecha: prod.objectDate,
         };
 
         if (prod.title) {
@@ -117,6 +120,8 @@ const translateObjects = async (data) => {
           const translateDynasty = await translate(prod.dynasty, "en", "es");
           armado.dynasty = translateDynasty.translation;
         }
+        if (prod.additionalImages && prod.additionalImages.length > 0)
+          armado.moreImg = prod.additionalImages;
 
         results.push(armado);
       })
@@ -135,11 +140,12 @@ app.get("/", async (req, res) => {
 
   try {
     // Usar los IDs almacenados en la sesión para la paginación
+    const departments = await getDepartments();
     const objects = req.session.filteredObjectIDs || (await getObjects());
     const objectsresult = await getObjectsByPage(objects, page, limit); // Paginación
     const finalObject = await translateObjects(objectsresult); // Traducción
 
-    res.render("index", { finalObject, page, limit });
+    res.render("index", { departments, finalObject, page, limit });
   } catch (error) {
     console.log(`Error al procesar la solicitud: ${error}`);
     res.status(500).send("Error al procesar la solicitud.");
@@ -153,6 +159,7 @@ app.get("/filtrar", async (req, res) => {
 
   try {
     // Obtener objetos filtrados
+    const departments = await getDepartments();
     const objects = await getObjectsByFilters(department, keyword, location);
 
     // Guardar los IDs en la sesión
@@ -162,22 +169,26 @@ app.get("/filtrar", async (req, res) => {
     const objectsresult = await getObjectsByPage(objects, page, limit);
     const finalObject = await translateObjects(objectsresult); // Traducción
 
-    res.render("index", { finalObject, page, limit });
+    res.render("index", { departments, finalObject, page, limit });
   } catch (error) {
     console.log(`Error al procesar la solicitud: ${error}`);
     res.status(500).send("Error al procesar la solicitud.");
   }
 });
 // Ruta para Mostrar mas imagenes
-app.get("/moreImg", async (req, res) => {
+app.get("/moreImg/:id", async (req, res) => {
   let id = [];
-  id.push(parseInt(req.params.id));
+  id.push(parseInt(req.params.id)); // Captura el id de la URL
+
+  const page = 1; // Suponiendo que tienes un valor predeterminado para la página
+  const limit = 10; // Suponiendo que tienes un valor predeterminado para el límite
 
   const objectsresult = await getObjectsByPage(id, page, limit);
   const finalObject = await translateObjects(objectsresult); // Traducción
 
   res.render("moreImg", { finalObject });
 });
+
 // Controlador de error
 app.use((req, res) => {
   res.status(404).render("error", {

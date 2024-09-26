@@ -1,3 +1,6 @@
+h1{
+    text-align: center;
+}
 .card {
     background-color: #ffffff; /* Color de fondo */
     border: 1px solid #e0e0e0; /* Borde ligero */
@@ -6,7 +9,8 @@
     padding: 16px; /* Espaciado interno */
     margin: 16px; /* Espaciado externo */
     transition: transform 0.2s; /* Efecto de transición */
-    /* height: 30rem; */
+    position: relative; /* Necesario para posicionar el contenido sobre la imagen */
+    display: inline-block;
 }
 
 .card:hover {
@@ -116,4 +120,44 @@ nav {
     pointer-events: none;
     cursor: default;
   }
+  .card a {
+    display: inline-block;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    color: white;
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: bold;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
   
+  .card a:hover {
+    background: linear-gradient(135deg, #fda085 0%, #f6d365 100%);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+  }
+  .none{
+    
+    opacity: 0; /* Comienza como invisible */
+
+  }
+  .active{
+    display: block;
+    text-align: center;
+    opacity: 1; /* Muestra el elemento */
+
+  }
+
+  .date {
+    position: absolute; /* Posiciona el texto sobre la imagen */
+    top: 5rem; /* Ajusta según sea necesario para la posición vertical */
+    left: 50%; /* Centra horizontalmente */
+    transform: translateX(-50%); /* Compensa el centrado */
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco semi-transparente */
+    padding: 5px; /* Espaciado alrededor del texto */
+    border-radius: 5px; /* Bordes redondeados */
+    transition: opacity 0.3s ease; /* Efecto de transición suave */
+}
