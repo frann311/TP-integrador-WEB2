@@ -39,11 +39,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-axios
-  .get("https://www.google.com")
-  .then((response) => console.log("Google is reachable"))
-  .catch((error) => console.log("Error reaching Google:", error));
-
 const getDepartments = async () => {
   const url_departments =
     "https://collectionapi.metmuseum.org/public/collection/v1/departments";
@@ -98,6 +93,47 @@ const getObjectsByPage = async (objectIDs, page = 1, limit = 20) => {
 
   return results;
 };
+// const translateObjects = async (data) => {
+//   const results = [];
+//   try {
+//     await Promise.all(
+//       data.map(async (prod) => {
+//         const armado = {
+//           id: prod.objectID,
+//           img: prod.primaryImageSmall,
+//           title: "Sin datos de Titulo",
+//           culture: "Sin datos de Cultura",
+//           dynasty: "Sin datos de dinastia",
+//           moreImg: null,
+//           fecha: prod.objectDate,
+//         };
+
+//         if (prod.title) {
+//           const translateTitle = await translate(prod.title, "en", "es");
+//           armado.title = translateTitle.translation;
+//         }
+//         if (prod.culture) {
+//           const translateCulture = await translate(prod.culture, "en", "es");
+//           armado.culture = translateCulture.translation;
+//         }
+//         if (prod.dynasty) {
+//           const translateDynasty = await translate(prod.dynasty, "en", "es");
+//           armado.dynasty = translateDynasty.translation;
+//         }
+//         if (prod.additionalImages && prod.additionalImages.length > 0)
+//           armado.moreImg = prod.additionalImages;
+
+//         results.push(armado);
+//       })
+//     );
+//     return results;
+//   } catch (error) {
+//     console.log(`Error al traducir: ${error}`);
+//     console.log(error.response ? error.response.data : "No response data");
+//     return [];
+//   }
+// };
+
 const translateObjects = async (data) => {
   const results = [];
   try {
@@ -115,15 +151,21 @@ const translateObjects = async (data) => {
 
         if (prod.title) {
           const translateTitle = await translate(prod.title, "en", "es");
-          armado.title = translateTitle.translation;
+          if (translateTitle && translateTitle.translation) {
+            armado.title = translateTitle.translation;
+          }
         }
         if (prod.culture) {
           const translateCulture = await translate(prod.culture, "en", "es");
-          armado.culture = translateCulture.translation;
+          if (translateCulture && translateCulture.translation) {
+            armado.culture = translateCulture.translation;
+          }
         }
         if (prod.dynasty) {
           const translateDynasty = await translate(prod.dynasty, "en", "es");
-          armado.dynasty = translateDynasty.translation;
+          if (translateDynasty && translateDynasty.translation) {
+            armado.dynasty = translateDynasty.translation;
+          }
         }
         if (prod.additionalImages && prod.additionalImages.length > 0)
           armado.moreImg = prod.additionalImages;
@@ -133,8 +175,7 @@ const translateObjects = async (data) => {
     );
     return results;
   } catch (error) {
-    console.log(`Error al traducir: ${error}`);
-    console.log(error.response ? error.response.data : "No response data");
+    console.log(`Error al traducir: ${error.message}`);
     return [];
   }
 };
