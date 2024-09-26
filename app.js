@@ -5,7 +5,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const session = require("express-session"); // Para manejar sesiones
-var translate = require("node-google-translate-skidz");
+const translate = require("node-google-translate-skidz");
 
 const app = express();
 const port = 3000;
@@ -38,6 +38,11 @@ app.set("view engine", "pug");
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+axios
+  .get("https://www.google.com")
+  .then((response) => console.log("Google is reachable"))
+  .catch((error) => console.log("Error reaching Google:", error));
 
 const getDepartments = async () => {
   const url_departments =
@@ -129,6 +134,7 @@ const translateObjects = async (data) => {
     return results;
   } catch (error) {
     console.log(`Error al traducir: ${error}`);
+    console.log(error.response ? error.response.data : "No response data");
     return [];
   }
 };
