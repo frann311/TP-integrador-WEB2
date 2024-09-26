@@ -93,91 +93,82 @@ const getObjectsByPage = async (objectIDs, page = 1, limit = 20) => {
 
   return results;
 };
-// const translateObjects = async (data) => {
-//   const results = [];
-//   try {
-//     await Promise.all(
-//       data.map(async (prod) => {
-//         const armado = {
-//           id: prod.objectID,
-//           img: prod.primaryImageSmall,
-//           title: "Sin datos de Titulo",
-//           culture: "Sin datos de Cultura",
-//           dynasty: "Sin datos de dinastia",
-//           moreImg: null,
-//           fecha: prod.objectDate,
-//         };
 
-//         if (prod.title) {
-//           const translateTitle = await translate(prod.title, "en", "es");
-//           armado.title = translateTitle.translation;
-//         }
-//         if (prod.culture) {
-//           const translateCulture = await translate(prod.culture, "en", "es");
-//           armado.culture = translateCulture.translation;
-//         }
-//         if (prod.dynasty) {
-//           const translateDynasty = await translate(prod.dynasty, "en", "es");
-//           armado.dynasty = translateDynasty.translation;
-//         }
-//         if (prod.additionalImages && prod.additionalImages.length > 0)
-//           armado.moreImg = prod.additionalImages;
-
-//         results.push(armado);
-//       })
-//     );
-//     return results;
-//   } catch (error) {
-//     console.log(`Error al traducir: ${error}`);
-//     console.log(error.response ? error.response.data : "No response data");
-//     return [];
-//   }
-// };
-
-const translateObjects = async (data) => {
+const translateObjects = (data) => {
   const results = [];
-  try {
-    await Promise.all(
-      data.map(async (prod) => {
-        const armado = {
-          id: prod.objectID,
-          img: prod.primaryImageSmall,
-          title: "Sin datos de Titulo",
-          culture: "Sin datos de Cultura",
-          dynasty: "Sin datos de dinastia",
-          moreImg: null,
-          fecha: prod.objectDate,
-        };
 
-        if (prod.title) {
-          const translateTitle = await translate(prod.title, "en", "es");
-          if (translateTitle && translateTitle.translation) {
-            armado.title = translateTitle.translation;
-          }
-        }
-        if (prod.culture) {
-          const translateCulture = await translate(prod.culture, "en", "es");
-          if (translateCulture && translateCulture.translation) {
-            armado.culture = translateCulture.translation;
-          }
-        }
-        if (prod.dynasty) {
-          const translateDynasty = await translate(prod.dynasty, "en", "es");
-          if (translateDynasty && translateDynasty.translation) {
-            armado.dynasty = translateDynasty.translation;
-          }
-        }
-        if (prod.additionalImages && prod.additionalImages.length > 0)
-          armado.moreImg = prod.additionalImages;
+  return Promise.all(
+    data.map((prod) => {
+      const armado = {
+        id: prod.objectID,
+        img: prod.primaryImageSmall,
+        title: "Sin datos de Titulo",
+        culture: "Sin datos de Cultura",
+        dynasty: "Sin datos de dinastia",
+        moreImg: null,
+        fecha: prod.objectDate,
+      };
 
-        results.push(armado);
-      })
-    );
-    return results;
-  } catch (error) {
-    console.log(`Error al traducir: ${error.message}`);
-    return [];
-  }
+      const translatePromises = [];
+
+      if (prod.title) {
+        translatePromises.push(
+          translate(prod.title, "en", "es")
+            .then((translateTitle) => {
+              if (translateTitle && translateTitle.translation) {
+                armado.title = translateTitle.translation;
+              }
+            })
+            .catch((error) =>
+              console.log(`Error al traducir título: ${error.message}`)
+            )
+        );
+      }
+
+      if (prod.culture) {
+        translatePromises.push(
+          translate(prod.culture, "en", "es")
+            .then((translateCulture) => {
+              if (translateCulture && translateCulture.translation) {
+                armado.culture = translateCulture.translation;
+              }
+            })
+            .catch((error) =>
+              console.log(`Error al traducir cultura: ${error.message}`)
+            )
+        );
+      }
+
+      if (prod.dynasty) {
+        translatePromises.push(
+          translate(prod.dynasty, "en", "es")
+            .then((translateDynasty) => {
+              if (translateDynasty && translateDynasty.translation) {
+                armado.dynasty = translateDynasty.translation;
+              }
+            })
+            .catch((error) =>
+              console.log(`Error al traducir dinastía: ${error.message}`)
+            )
+        );
+      }
+
+      if (prod.additionalImages && prod.additionalImages.length > 0) {
+        armado.moreImg = prod.additionalImages;
+      }
+
+      return Promise.all(translatePromises)
+        .then(() => results.push(armado))
+        .catch((error) =>
+          console.log(`Error general al traducir: ${error.message}`)
+        );
+    })
+  )
+    .then(() => results)
+    .catch((error) => {
+      console.log(`Error general en translateObjects: ${error.message}`);
+      return [];
+    });
 };
 
 // Ruta principal para la página inicial
