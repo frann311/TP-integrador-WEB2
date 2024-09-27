@@ -52,6 +52,10 @@ const getObjects = async () => {
 };
 
 const getObjectsByFilters = async (departmentId, keyword, geolocation) => {
+  if (departmentId == "" && keyword == "" && geolocation == "") {
+    const allObjects = await getObjects();
+    return allObjects;
+  }
   const paramLocation = geolocation != "" ? `&geoLocation=${geolocation}` : "";
   const paramDepartment =
     departmentId != "" ? `&departmentId=${departmentId}` : "";
@@ -69,43 +73,51 @@ const getObjectsByFilters = async (departmentId, keyword, geolocation) => {
 const getObjectsByPage = async (objectIDs, page = 1, limit = 20) => {
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
-  let paginatedIDs = [];
-  if (objectIDs.length > limit) {
-    paginatedIDs = objectIDs.slice(startIndex, endIndex);
-  } else {
-    paginatedIDs = objectIDs;
-  }
 
-  const results = [];
-  for (const id of paginatedIDs) {
-    try {
-      const response = await axios.get(
+  // Asegúrate de que solo obtienes IDs dentro del rango de paginación
+  const paginatedIDs = objectIDs.slice(startIndex, endIndex);
+
+  // Crea un array de promesas para las solicitudes de los objetos
+  const requests = paginatedIDs.map((id) => {
+    return axios
+      .get(
         `https://collectionapi.metmuseum.org/public/collection/v1/objects/${id}`
-      );
-      results.push(response.data);
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-      } else {
-        console.error("Error al realizar la búsqueda:", error);
-      }
-    }
-  }
+      )
+      .then((response) => response.data) // Devuelve solo los datos de la respuesta
+      .catch((error) => {
+        // Manejo de errores por cada solicitud individual
+        if (error.response && error.response.status === 404) {
+          console.warn(`Objeto con ID ${id} no encontrado.`);
+          return null; // Retorna null para IDs no encontrados
+        } else {
+          console.error("Error al realizar la búsqueda:", error);
+          return null; // Retorna null en caso de otro error
+        }
+      });
+  });
 
-  return results;
+  // Espera a que todas las promesas se resuelvan
+  const results = await Promise.all(requests);
+
+  // Filtra los resultados para eliminar cualquier null que haya sido retornado por errores
+  return results.filter((result) => result !== null);
 };
 
-const translateObjects = (data) => {
-  const results = [];
+// const translate = require("node-google-translate-skidz");
+// translate({ text: "hello", source: "en", target: "es" }, function (traduccion) {
+//   console.log(traduccion, traduccion.translation);
+// });
 
-  return Promise.all(
-    data.map((prod) => {
+const translateObjects = async (data) => {
+  const results = await Promise.all(
+    data.map(async (prod) => {
       const armado = {
         id: prod.objectID,
         img: prod.primaryImageSmall,
-        title: "Sin datos de Titulo",
-        culture: "Sin datos de Cultura",
-        dynasty: "Sin datos de dinastia",
-        moreImg: null,
+        title: prod.title || "Sin datos de Titulo",
+        culture: prod.culture || "Sin datos de Cultura",
+        dynasty: prod.dynasty || "Sin datos de dinastía",
+        moreImg: prod.additionalImages || null,
         fecha: prod.objectDate,
       };
 
@@ -113,62 +125,63 @@ const translateObjects = (data) => {
 
       if (prod.title) {
         translatePromises.push(
-          translate(prod.title, "en", "es")
-            .then((translateTitle) => {
+          (async () => {
+            try {
+              const translateTitle = await translate(prod.title, "en", "es");
               if (translateTitle && translateTitle.translation) {
                 armado.title = translateTitle.translation;
               }
-            })
-            .catch((error) =>
-              console.log(`Error al traducir título: ${error.message}`)
-            )
+            } catch (error) {
+              console.error("Error al traducir título:", error.message);
+            }
+          })()
         );
       }
 
       if (prod.culture) {
         translatePromises.push(
-          translate(prod.culture, "en", "es")
-            .then((translateCulture) => {
+          (async () => {
+            try {
+              const translateCulture = await translate(
+                prod.culture,
+                "en",
+                "es"
+              );
               if (translateCulture && translateCulture.translation) {
                 armado.culture = translateCulture.translation;
               }
-            })
-            .catch((error) =>
-              console.log(`Error al traducir cultura: ${error.message}`)
-            )
+            } catch (error) {
+              console.error("Error al traducir cultura:", error.message);
+            }
+          })()
         );
       }
 
       if (prod.dynasty) {
         translatePromises.push(
-          translate(prod.dynasty, "en", "es")
-            .then((translateDynasty) => {
+          (async () => {
+            try {
+              const translateDynasty = await translate(
+                prod.dynasty,
+                "en",
+                "es"
+              );
               if (translateDynasty && translateDynasty.translation) {
                 armado.dynasty = translateDynasty.translation;
               }
-            })
-            .catch((error) =>
-              console.log(`Error al traducir dinastía: ${error.message}`)
-            )
+            } catch (error) {
+              console.error("Error al traducir dinastía:", error.message);
+            }
+          })()
         );
       }
 
-      if (prod.additionalImages && prod.additionalImages.length > 0) {
-        armado.moreImg = prod.additionalImages;
-      }
-
-      return Promise.all(translatePromises)
-        .then(() => results.push(armado))
-        .catch((error) =>
-          console.log(`Error general al traducir: ${error.message}`)
-        );
+      await Promise.all(translatePromises);
+      return armado;
     })
-  )
-    .then(() => results)
-    .catch((error) => {
-      console.log(`Error general en translateObjects: ${error.message}`);
-      return [];
-    });
+  );
+
+  return results;
 };
 
 // Ruta principal para la página inicial
