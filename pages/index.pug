@@ -41,7 +41,7 @@ block content
            else
             h2  No hay resultados       
         nav
-                   
+          if  finalObject && finalObject.length> 17             
             if page > 1
                 a(href=`/?page=${page - 1}&limit=${limit}`) Anterior
             a(href=`/?page=${page + 1}&limit=${limit}`) Siguiente
