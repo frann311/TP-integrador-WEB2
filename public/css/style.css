@@ -1,163 +1,162 @@
 h1{
-    text-align: center;
+  text-align: center;
 }
 .card {
-    background-color: #ffffff; /* Color de fondo */
-    border: 1px solid #e0e0e0; /* Borde ligero */
-    border-radius: 8px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    padding: 16px; /* Espaciado interno */
-    margin: 16px; /* Espaciado externo */
-    transition: transform 0.2s; /* Efecto de transición */
-    position: relative; /* Necesario para posicionar el contenido sobre la imagen */
-    display: inline-block;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin: 16px;
+  transition: transform 0.2s;
+  position: relative;
+  display: inline-block;
 }
 
 .card:hover {
-    transform: translateY(-5px); /* Elevación al pasar el ratón */
+  transform: translateY(-5px);
 }
 
 .card img {
-    max-width: 100%; /* Asegura que las imágenes no excedan el ancho de la tarjeta */
-    border-radius: 4px; /* Bordes redondeados en la imagen */
+  max-width: 100%;
+  border-radius: 4px;
 }
 
 .card-title {
-    font-size: 1.5rem; /* Tamaño del texto del título */
-    margin-bottom: 8px; /* Espaciado inferior */
+  font-size: 1.5rem;
+  margin-bottom: 8px;
 }
 
 .card-text {
-    font-size: 1rem; /* Tamaño del texto */
-    color: #333; /* Color del texto */
+  font-size: 1rem;
+  color: #333;
 }
 
 .grid {
-    display: grid; /* Activa el modelo de cuadrícula */
-    grid-template-columns: repeat(4, 1fr); /* Crea 4 columnas de igual tamaño */
-    gap: 16px; /* Espaciado entre los elementos de la cuadrícula */
-    padding: 16px; /* Espaciado interno de la cuadrícula */
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 16px;
 }
 
 body {
-    background-color: #f4f4f4; /* Color de fondo de la página */
-    font-family: Arial, sans-serif; /* Fuente general */
-    margin: 0; /* Margen cero para evitar espacios no deseados */
-    padding: 20px; /* Espaciado interno alrededor del contenido */
+  background-color: #f4f4f4;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
 }
 
 form {
-    background-color: #ffffff; /* Color de fondo del formulario */
-    border: 1px solid #e0e0e0; /* Borde del formulario */
-    border-radius: 8px; /* Bordes redondeados del formulario */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    padding: 20px; /* Espaciado interno del formulario */
-    max-width: 500px; /* Ancho máximo del formulario */
-    margin: auto; /* Centra el formulario horizontalmente */
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 500px;
+  margin: auto;
 }
 
 div {
-    margin-bottom: 15px; /* Espaciado inferior entre los elementos del formulario */
+  margin-bottom: 15px;
 }
 
 label {
-    display: block; /* Hace que las etiquetas ocupen toda la línea */
-    margin-bottom: 5px; /* Espaciado inferior para las etiquetas */
-    font-weight: bold; /* Negrita para las etiquetas */
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
 }
 
 select,
 input[type="text"] {
-    width: 100%; /* Ancho completo */
-    padding: 10px; /* Espaciado interno */
-    border: 1px solid #ccc; /* Borde de los campos */
-    border-radius: 4px; /* Bordes redondeados en campos */
-    box-sizing: border-box; /* Incluye el padding y el borde en el ancho total */
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 button[type="submit"] {
-    background-color: #007bff; /* Color de fondo del botón */
-    color: white; /* Color del texto del botón */
-    border: none; /* Sin borde */
-    border-radius: 4px; /* Bordes redondeados en el botón */
-    padding: 10px 15px; /* Espaciado interno en el botón */
-    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
-    font-size: 16px; /* Tamaño de fuente del botón */
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 button[type="submit"]:hover {
-    background-color: #0056b3; /* Color de fondo al pasar el ratón sobre el botón */
+  background-color: #0056b3;
 }
 
-
 nav {
-    text-align: center;
-    margin-top: 20px;
-  }
-  
-  nav a {
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 0 5px;
-    text-decoration: none;
-    color: #ffffff;
-    background-color: #007BFF;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-  }
-  
-  nav a:hover {
-    background-color: #0056b3;
-  }
-  
-  nav a:active {
-    background-color: #004085;
-  }
-  
-  nav a:disabled, 
-  nav a.disabled {
-    background-color: #cccccc;
-    pointer-events: none;
-    cursor: default;
-  }
-  .card a {
-    display: inline-block;
-    padding: 12px 24px;
-    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-    color: white;
-    font-size: 16px;
-    text-transform: uppercase;
-    font-weight: bold;
-    border-radius: 50px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .card a:hover {
-    background: linear-gradient(135deg, #fda085 0%, #f6d365 100%);
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
-    transform: translateY(-2px);
-  }
-  .none{
-    
-    opacity: 0; /* Comienza como invisible */
+  text-align: center;
+  margin-top: 20px;
+}
 
-  }
-  .active{
-    display: block;
-    text-align: center;
-    opacity: 1; /* Muestra el elemento */
+nav a {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 0 5px;
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #007BFF;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
 
-  }
+nav a:hover {
+  background-color: #0056b3;
+}
 
-  .date {
-    position: absolute; /* Posiciona el texto sobre la imagen */
-    top: 5rem; /* Ajusta según sea necesario para la posición vertical */
-    left: 50%; /* Centra horizontalmente */
-    transform: translateX(-50%); /* Compensa el centrado */
-    background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco semi-transparente */
-    padding: 5px; /* Espaciado alrededor del texto */
-    border-radius: 5px; /* Bordes redondeados */
-    transition: opacity 0.3s ease; /* Efecto de transición suave */
+nav a:active {
+  background-color: #004085;
+}
+
+nav a:disabled, 
+nav a.disabled {
+  background-color: #cccccc;
+  pointer-events: none;
+  cursor: default;
+}
+
+.card a {
+  display: inline-block;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  color: white;
+  font-size: 16px;
+  text-transform: uppercase;
+  font-weight: bold;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card a:hover {
+  background: linear-gradient(135deg, #fda085 0%, #f6d365 100%);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.none{
+  opacity: 0;
+}
+
+.active{
+  display: block;
+  text-align: center;
+  opacity: 1;
+}
+
+.date {
+  position: absolute;
+  top: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 5px;
+  border-radius: 5px;
+  transition: opacity 0.3s ease;
 }

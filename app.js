@@ -4,7 +4,7 @@ const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
-const session = require("express-session"); // Para manejar sesiones
+const session = require("express-session");
 const translate = require("node-google-translate-skidz");
 
 const app = express();
@@ -16,22 +16,20 @@ app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["'self'"], // Permitir contenido solo del mismo origen
-        imgSrc: ["'self'", "data:", "https://images.metmuseum.org"], // Permitir imágenes de este dominio
-        // Otras directivas CSP que necesites
+        defaultSrc: ["'self'"],
+        imgSrc: ["'self'", "data:", "https://images.metmuseum.org"],
       },
     },
   })
 );
 app.use(
   session({
-    secret: "mySecret", // Cambia esto por un valor más seguro en producción
+    secret: "mySecret",
     resave: false,
     saveUninitialized: true,
   })
 );
 
-// Configurar Pug como motor de plantillas
 app.set("views", path.join(__dirname, "pages"));
 app.set("view engine", "pug");
 
@@ -73,40 +71,26 @@ const getObjectsByFilters = async (departmentId, keyword, geolocation) => {
 const getObjectsByPage = async (objectIDs, page = 1, limit = 20) => {
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
-
-  // Asegúrate de que solo obtienes IDs dentro del rango de paginación
   const paginatedIDs = objectIDs.slice(startIndex, endIndex);
-
-  // Crea un array de promesas para las solicitudes de los objetos
   const requests = paginatedIDs.map((id) => {
     return axios
       .get(
         `https://collectionapi.metmuseum.org/public/collection/v1/objects/${id}`
       )
-      .then((response) => response.data) // Devuelve solo los datos de la respuesta
+      .then((response) => response.data)
       .catch((error) => {
-        // Manejo de errores por cada solicitud individual
         if (error.response && error.response.status === 404) {
           console.warn(`Objeto con ID ${id} no encontrado.`);
-          return null; // Retorna null para IDs no encontrados
+          return null;
         } else {
           console.error("Error al realizar la búsqueda:", error);
-          return null; // Retorna null en caso de otro error
+          return null;
         }
       });
   });
-
-  // Espera a que todas las promesas se resuelvan
   const results = await Promise.all(requests);
-
-  // Filtra los resultados para eliminar cualquier null que haya sido retornado por errores
   return results.filter((result) => result !== null);
 };
-
-// const translate = require("node-google-translate-skidz");
-// translate({ text: "hello", source: "en", target: "es" }, function (traduccion) {
-//   console.log(traduccion, traduccion.translation);
-// });
 
 const translateObjects = async (data) => {
   const results = await Promise.all(
@@ -184,17 +168,15 @@ const translateObjects = async (data) => {
   return results;
 };
 
-// Ruta principal para la página inicial
 app.get("/", async (req, res) => {
-  const page = parseInt(req.query.page) || 1; // Página actual
-  const limit = parseInt(req.query.limit) || 20; // Límite de objetos por página
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 20;
 
   try {
-    // Usar los IDs almacenados en la sesión para la paginación
     const departments = await getDepartments();
     const objects = req.session.filteredObjectIDs || (await getObjects());
-    const objectsresult = await getObjectsByPage(objects, page, limit); // Paginación
-    const finalObject = await translateObjects(objectsresult); // Traducción
+    const objectsresult = await getObjectsByPage(objects, page, limit);
+    const finalObject = await translateObjects(objectsresult);
 
     res.render("index", { departments, finalObject, page, limit });
   } catch (error) {
@@ -203,22 +185,16 @@ app.get("/", async (req, res) => {
   }
 });
 
-// Ruta para aplicar los filtros y guardar los IDs en la sesión
 app.get("/filtrar", async (req, res) => {
-  const { department, keyword, location, page = 1 } = req.query; // 'page' es opcional, por defecto será 1
-  const limit = parseInt(req.query.limit) || 20; // Límite de objetos por página
+  const { department, keyword, location, page = 1 } = req.query;
+  const limit = parseInt(req.query.limit) || 20;
 
   try {
-    // Obtener objetos filtrados
     const departments = await getDepartments();
     const objects = await getObjectsByFilters(department, keyword, location);
-
-    // Guardar los IDs en la sesión
     req.session.filteredObjectIDs = objects;
-
-    // Paginación sobre los IDs filtrados
     const objectsresult = await getObjectsByPage(objects, page, limit);
-    const finalObject = await translateObjects(objectsresult); // Traducción
+    const finalObject = await translateObjects(objectsresult);
 
     res.render("index", { departments, finalObject, page, limit });
   } catch (error) {
@@ -226,21 +202,18 @@ app.get("/filtrar", async (req, res) => {
     res.status(500).send("Error al procesar la solicitud.");
   }
 });
-// Ruta para Mostrar mas imagenes
+
 app.get("/moreImg/:id", async (req, res) => {
   let id = [];
-  id.push(parseInt(req.params.id)); // Captura el id de la URL
-
-  const page = 1; // Suponiendo que tienes un valor predeterminado para la página
-  const limit = 10; // Suponiendo que tienes un valor predeterminado para el límite
-
+  id.push(parseInt(req.params.id));
+  const page = 1;
+  const limit = 10;
   const objectsresult = await getObjectsByPage(id, page, limit);
-  const finalObject = await translateObjects(objectsresult); // Traducción
+  const finalObject = await translateObjects(objectsresult);
 
   res.render("moreImg", { finalObject });
 });
 
-// Controlador de error
 app.use((req, res) => {
   res.status(404).render("error", {
     title: "error 404 Not Found",
